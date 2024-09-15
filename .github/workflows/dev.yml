@@ -51,9 +51,15 @@ jobs:
 
       - name: Delete previous pre-release
         run: |
-          gh release delete $(gh release list --limit 1 --json tagName --jq '.[0].tagName') --yes
+          PREV_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          if [ -n "$PREV_TAG" ]; then
+            gh release delete "$PREV_TAG" --yes
+          else
+            echo "No previous release found."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
 
       - name: Set release version
         id: version
