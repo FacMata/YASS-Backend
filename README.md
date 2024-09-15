@@ -1,7 +1,9 @@
 # YASS-Backend
 **Yet Another Stream Splitter (Generally for EMBY)**
 
-![Main Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/main.yml/badge.svg?branch=main)
+![Main Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/main.yml/badge.svg)
+
+![Dev Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/dev.yml/badge.svg)
 
 ## 这是什么
 
