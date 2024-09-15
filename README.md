@@ -1,9 +1,7 @@
 # YASS-Backend
 **Yet Another Stream Splitter (Generally for EMBY)**
 
-![Main Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/main.yml/badge.svg)
-
-![Dev Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/dev.yml/badge.svg)
+![Main Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/main.yml/badge.svg)    ![Dev Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/dev.yml/badge.svg)
 
 ## 这是什么
 
@@ -27,11 +25,15 @@ YASS 项目的后端程序。其完成的工作是从本地目录找到前端请
 
 
 
+**目前** 可以搭配原版前端使用，也可以搭配 [YASS-Frontend]([FacMata/YASS-Backend: Yet Another Stream Splitter (generally for EMBY) (github.com)](https://github.com/FacMata/YASS-Frontend)) 使用。
+
+
+
 ## 如何配置
 
 #### 1. 下载最新 Release
 
-使用 `unzip` 解压到你的运行目录下。
+下载到你的运行目录下即可，无需解压。
 
 #### 2. 配置 `config.yaml`
 
