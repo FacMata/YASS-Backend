@@ -27,16 +27,6 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}
-
       - name: Install dependencies
         run: |
           go mod download
@@ -46,13 +36,13 @@ jobs:
           GOOS: ${{ matrix.os.goos }}
           GOARCH: ${{ matrix.os.goarch }}
         run: |
-          go build -o output/${{ matrix.os.os-name }}/main main.go
+          go build -o output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }} main.go
 
       - name: Upload binaries as artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os.os-name }}-binary
-          path: output/${{ matrix.os.os-name }}/main
+          path: output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }}
 
   release:
     needs: build
@@ -70,13 +60,13 @@ jobs:
           else
             VERSION=${{ github.sha }}
           fi
-          echo "VERSION=$VERSION" >> $GITHUB_ENV  # 使用环境变量传递版本信息
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GITHUB_TOKEN 来认证
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ env.VERSION }}
           release_name: "Release ${{ env.VERSION }}"
           body: |
@@ -90,16 +80,16 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: output/linux-amd64/main
-          asset_name: main-linux-amd64
+          asset_path: output/YASS-linux-amd64/YASS-linux-amd64
+          asset_name: YASS-linux-amd64
           asset_content_type: application/octet-stream
-          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GITHUB_TOKEN 来认证
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Linux-arm64 binary to Release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: output/linux-arm64/main
-          asset_name: main-linux-arm64
+          asset_path: output/YASS-linux-arm64/YASS-linux-arm64
+          asset_name: YASS-linux-arm64
           asset_content_type: application/octet-stream
-          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GITHUB_TOKEN 来认证
+          token: ${{ secrets.GITHUB_TOKEN }}
