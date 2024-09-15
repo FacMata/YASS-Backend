@@ -65,7 +65,7 @@ jobs:
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: actions/create-release@v3  # Updated to v3
+        uses: actions/create-release@v1
         with:
           tag_name: ${{ env.VERSION }}
           release_name: "Release ${{ env.VERSION }}"
@@ -79,7 +79,7 @@ jobs:
       - name: Upload Linux-amd64 binary to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: actions/upload-release-asset@v2  # Updated to v2
+        uses: actions/upload-release-asset@v1  # Updated to v2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./artifacts/linux-amd64-binary/YASS-linux-amd64
@@ -89,7 +89,7 @@ jobs:
       - name: Upload Linux-arm64 binary to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: actions/upload-release-asset@v2  # Updated to v2
+        uses: actions/upload-release-asset@v1  # Updated to v2
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./artifacts/linux-arm64-binary/YASS-linux-arm64
