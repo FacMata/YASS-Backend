@@ -13,14 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.23']
-        platform: 
-          - goos: linux
-            goarch: amd64
-            platform-name: linux-amd64
-          - goos: linux
-            goarch: arm64
-            platform-name: linux-arm64
+        go-version: ['1.23']  # Go 版本
+        os: 
+          - { goos: 'linux', goarch: 'amd64', os-name: 'linux-amd64' }
+          - { goos: 'linux', goarch: 'arm64', os-name: 'linux-arm64' }
 
     timeout-minutes: 30
 
@@ -39,24 +35,23 @@ jobs:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.platform-name }}-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.platform-name }}
+            ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}
 
       - name: Install dependencies
         run: |
           go mod download
 
-      - name: Build for ${{ matrix.platform-name }}
+      - name: Build for ${{ matrix.os.os-name }}
         env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
+          GOOS: ${{ matrix.os.goos }}
+          GOARCH: ${{ matrix.os.goarch }}
         run: |
-          # 构建时给二进制文件加上平台后缀
-          go build -o output/${{ matrix.platform-name }}/main-${{ matrix.platform-name }} main.go
+          go build -o output/${{ matrix.os.os-name }}/main main.go
 
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.platform-name }}-binary  # 为每个平台生成独立的 artifact
-          path: output/${{ matrix.platform-name }}/main-${{ matrix.platform-name }}  # 指定唯一的二进制文件名
+          name: ${{ matrix.os.os-name }}-binary
+          path: output/${{ matrix.os.os-name }}/
