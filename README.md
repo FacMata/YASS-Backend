@@ -1,7 +1,7 @@
 # YASS-Backend
 **Yet Another Stream Splitter (Generally for EMBY)**
 
-
+![Main Branch Build CI](https://github.com/FacMata/YASS-Backend/actions/workflows/build.yml/badge.svg?branch=main)
 
 ## 这是什么
 
@@ -57,3 +57,11 @@ Server:
 ```
 
 持久化运行推荐使用 `SystemD System Service` 或者 `screen` 。
+
+
+
+## 寻求交流
+
+Email: [contact@facmata.net](mailto://contact@facmata.net)
+
+Telegram Group: [YASS Talking](https://t.me/YASS_Talking)
