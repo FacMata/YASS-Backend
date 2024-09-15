@@ -1,4 +1,4 @@
-name: Build and Release Go project
+name: Mainstream Build
 
 on:
   push:
