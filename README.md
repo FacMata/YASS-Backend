@@ -21,7 +21,7 @@ YASS 项目的后端程序。其完成的工作是从本地目录找到前端请
 
 
 
-本程序在 [Go_stream](https://github.com/MisakaFxxk/Go_stream) 的基础上利用更多 Golang 的特性，比如分片传输、并发缓存池、连接回收等，播放效率相比原版有一定提升。
+本程序在 [Go_stream](https://github.com/MisakaFxxk/Go_stream) 的基础上利用更多 Go 的特性，比如分片传输、并发缓存池、连接回收等，播放效率相比原版有一定提升。
 
 
 
