@@ -25,7 +25,7 @@ YASS 项目的后端程序。其完成的工作是从本地目录找到前端请
 
 
 
-**目前** 可以搭配原版前端使用，也可以搭配 [YASS-Frontend]([FacMata/YASS-Backend: Yet Another Stream Splitter (generally for EMBY) (github.com)](https://github.com/FacMata/YASS-Frontend)) 使用。
+**目前** 可以搭配原版前端使用，也可以搭配 [YASS-Frontend](https://github.com/FacMata/YASS-Frontend) 使用。
 
 
 
