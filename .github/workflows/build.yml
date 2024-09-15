@@ -33,10 +33,17 @@ jobs:
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.os.os-name }}
+            ${{ runner.os }}-go-${{ matrix.go-version }}
+            ${{ runner.os }}-go
 
+      - name: Clear Go cache
+        run: |
+          rm -rf ~/go/pkg/mod
+          rm -rf ~/.cache/go-build
+                
       - name: Install dependencies
         run: |
           go mod download
