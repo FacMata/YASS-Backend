@@ -27,6 +27,7 @@ var (
         remote_token string
         mount_dir    string
         port         string
+        path         string
 )
 
 // 处理 HTTP Range 请求，支持按需加载
@@ -194,6 +195,7 @@ func main() {
         remote_token = viper.GetString("Remote.apikey")
         mount_dir = viper.GetString("Mount.dir")
         port = viper.GetString("Server.port") // 服务端口
+        path = viper.GetString("Server.path")
 
         // 初始化 Gin 引擎
         gin.SetMode(gin.ReleaseMode)
@@ -203,7 +205,7 @@ func main() {
         r.Use(corsMiddleware())
 
         // 设置路由和文件流传输处理
-        r.GET("/stream", remote)
+        r.GET(path, remote)
 
         // 启动服务，监听指定端口
         r.Run(":" + port)
