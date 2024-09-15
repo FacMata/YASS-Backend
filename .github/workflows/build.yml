@@ -15,6 +15,15 @@ jobs:
       matrix:
         go-version: ['1.20']
         platform: ['linux/amd64', 'linux/arm64']
+
+    # 设置超时时间，防止步骤过长导致自动取消
+    timeout-minutes: 30
+
+    # 防止多个同类任务同时运行导致冲突
+    concurrency:
+      group: build-${{ github.ref }}
+      cancel-in-progress: true
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,15 +33,16 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-${{ matrix.go-version }}
+      # 暂时禁用缓存以排查问题，确保任务可以正常运行
+      # - name: Cache Go modules
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ~/go/pkg/mod
+      #       ~/.cache/go-build
+      #     key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-go-${{ matrix.go-version }}
 
       - name: Install dependencies
         run: |
