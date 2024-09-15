@@ -13,10 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.23']  # 使用和 go.mod 中一致的版本
+        go-version: ['1.23']
         platform: 
-          - { goos: 'linux', goarch: 'amd64', platform-name: 'linux-amd64' }
-          - { goos: 'linux', goarch: 'arm64', platform-name: 'linux-arm64' }
+          - goos: linux
+            goarch: amd64
+            platform-name: linux-amd64
+          - goos: linux
+            goarch: arm64
+            platform-name: linux-arm64
 
     timeout-minutes: 30
 
@@ -32,11 +36,9 @@ jobs:
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
-          # 缓存路径
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-          # 缓存键，确保唯一性
           key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.platform-name }}-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-${{ matrix.go-version }}-${{ matrix.platform-name }}
@@ -50,10 +52,11 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
         run: |
-          go build -o output/${{ matrix.platform-name }}/main main.go
+          # 构建时给二进制文件加上平台后缀
+          go build -o output/${{ matrix.platform-name }}/main-${{ matrix.platform-name }} main.go
 
       - name: Upload binaries
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.platform-name }}-binary  # 使用合法的名称
-          path: output/${{ matrix.platform-name }}/
+          name: ${{ matrix.platform-name }}-binary  # 为每个平台生成独立的 artifact
+          path: output/${{ matrix.platform-name }}/main-${{ matrix.platform-name }}  # 指定唯一的二进制文件名
