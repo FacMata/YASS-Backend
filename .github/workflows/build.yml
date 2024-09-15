@@ -20,8 +20,9 @@ jobs:
 
     timeout-minutes: 30
 
+    # 调整并发控制，确保只有最新的任务执行，不会相互取消
     concurrency:
-      group: build-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ matrix.platform-name }}-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
