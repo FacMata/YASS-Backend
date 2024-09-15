@@ -1,15 +1,12 @@
-name: Mainstream Build
+name: Dev Build and Pre-Release
 
 on:
   push:
-    tags:
-      - 'v*'  # 仅在 main 分支上包含 tag 时触发，格式为 v开头的标签 (如 v1.0.0)
     branches:
-      - dev   # dev 分支继续在每次 push 时触发
+      - dev   # 在 dev 分支上每次 push 都会触发
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,8 +14,6 @@ jobs:
         os: 
           - { goos: 'linux', goarch: 'amd64', os-name: 'linux-amd64' }
           - { goos: 'linux', goarch: 'arm64', os-name: 'linux-arm64' }
-
-    timeout-minutes: 30
 
     steps:
       - name: Checkout code
@@ -47,7 +42,6 @@ jobs:
           path: output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }}
 
   release:
-    if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
 
@@ -55,38 +49,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Delete previous pre-release
+        run: |
+          gh release delete $(gh release list --limit 1 --json tagName --jq '.[0].tagName') --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set release version
         id: version
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            git fetch --tags
-            VERSION=$(git describe --tags --abbrev=0 --always)
-          else
-            VERSION=${{ github.sha }}
-          fi
-          echo "VERSION=$VERSION" >> $GITHUB_ENV  # Use environment variable
+          VERSION=${{ github.sha }}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV  # 使用环境变量
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           path: ./artifacts
 
-      - name: Create GitHub Release
+      - name: Create GitHub Pre-Release
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Provide GITHUB_TOKEN via environment variable
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 提供 GITHUB_TOKEN
         uses: actions/create-release@v1
         with:
           tag_name: ${{ env.VERSION }}
-          release_name: "Release ${{ env.VERSION }}"
+          release_name: "Pre-Release ${{ env.VERSION }}"
           body: |
-            This release was automatically generated.
+            预发布版本:
             - Branch: ${{ github.ref }}
             - Commit: ${{ github.sha }}
           draft: false
-          prerelease: ${{ github.ref == 'refs/heads/dev' }}
+          prerelease: true
 
-      - name: Upload Linux-amd64 binary to Release
+      - name: Upload Linux-amd64 binary to Pre-Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/upload-release-asset@v1
@@ -96,7 +91,7 @@ jobs:
           asset_name: YASS-linux-amd64
           asset_content_type: application/octet-stream
 
-      - name: Upload Linux-arm64 binary to Release
+      - name: Upload Linux-arm64 binary to Pre-Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/upload-release-asset@v1

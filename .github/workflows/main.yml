@@ -1,0 +1,97 @@
+name: Main Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # 仅在 main 分支推送 tag 时触发，格式为 v开头的标签 (如 v1.0.0)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23']
+        os: 
+          - { goos: 'linux', goarch: 'amd64', os-name: 'linux-amd64' }
+          - { goos: 'linux', goarch: 'arm64', os-name: 'linux-arm64' }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install dependencies
+        run: |
+          go mod download
+
+      - name: Build for ${{ matrix.os.os-name }}
+        env:
+          GOOS: ${{ matrix.os.goos }}
+          GOARCH: ${{ matrix.os.goarch }}
+        run: |
+          go build -o output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }} main.go
+
+      - name: Upload binaries as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os.os-name }}-binary
+          path: output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set release version
+        id: version
+        run: |
+          git fetch --tags
+          VERSION=$(git describe --tags --abbrev=0 --always)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV  # 使用环境变量
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts
+
+      - name: Create GitHub Release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 提供 GITHUB_TOKEN
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
+          body: |
+            正式发布版本:
+            - Branch: ${{ github.ref }}
+            - Commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Linux-amd64 binary to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/linux-amd64-binary/YASS-linux-amd64
+          asset_name: YASS-linux-amd64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux-arm64 binary to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/linux-arm64-binary/YASS-linux-arm64
+          asset_name: YASS-linux-arm64
+          asset_content_type: application/octet-stream
