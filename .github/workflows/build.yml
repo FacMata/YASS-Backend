@@ -72,7 +72,7 @@ jobs:
           # 如果是 main 分支，使用最新的 git tag 作为版本号
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             git fetch --tags
-            VERSION=$(git describe --tags --abbrev=0)
+            VERSION=$(git describe --tags --abbrev=0 --always)
             echo "::set-output name=VERSION::$VERSION"
           else
             # 否则使用 commit SHA 作为 prerelease 版本号
