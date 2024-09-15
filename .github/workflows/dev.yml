@@ -72,8 +72,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 提供 GITHUB_TOKEN
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: "Pre-Release ${{ env.VERSION }}"
+          tag_name: ${{ github.sha }}
+          release_name: "Pre-Release ${{ github.sha }}"
           body: |
             预发布版本:
             - Branch: ${{ github.ref }}
