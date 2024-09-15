@@ -56,6 +56,7 @@ jobs:
             gh release delete "$PREV_TAG" --yes
           else
             echo "No previous release found."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
