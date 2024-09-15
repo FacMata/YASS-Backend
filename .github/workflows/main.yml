@@ -3,7 +3,7 @@ name: Main Build and Release
 on:
   push:
     tags:
-      - 'v*'  # 仅在 main 分支推送 tag 时触发，格式为 v开头的标签 (如 v1.0.0)
+      - 'v*'
 
 jobs:
   build:
@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5  # Updated to v5
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -36,7 +36,7 @@ jobs:
           go build -o output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }} main.go
 
       - name: Upload binaries as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: ${{ matrix.os.os-name }}-binary
           path: output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }}
@@ -47,24 +47,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4
 
       - name: Set release version
         id: version
         run: |
           git fetch --tags
           VERSION=$(git describe --tags --abbrev=0 --always)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV  # 使用环境变量
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4  # Updated to v4
         with:
           path: ./artifacts
 
       - name: Create GitHub Release
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 提供 GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/create-release@v1
         with:
           tag_name: ${{ env.VERSION }}
