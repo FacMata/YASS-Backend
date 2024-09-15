@@ -59,12 +59,12 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
 
       - name: Set release version
         id: version
         run: |
-          VERSION=${{ github.sha }}
+          SHORT_SHA=$(git rev-parse --short=7 ${{ github.sha }})  # 使用 SHA 的前 7 个字符
+          VERSION="dev-$SHORT_SHA"
           echo "VERSION=$VERSION" >> $GITHUB_ENV  # 使用环境变量
 
       - name: Download artifacts
@@ -78,8 +78,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 提供 GITHUB_TOKEN
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.sha }}
-          release_name: "Pre-Release ${{ github.sha }}"
+          tag_name: ${{ env.VERSION }}
+          release_name: "Pre-Release ${{ env.VERSION }}"
           body: |
             预发布版本:
             - Branch: ${{ github.ref }}
