@@ -3,7 +3,7 @@ name: Dev Build and Pre-Release
 on:
   push:
     branches:
-      - dev   # 在 dev 分支上每次 push 都会触发
+      - dev
 
 jobs:
   build:
@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5  # Updated to v5
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -36,7 +36,7 @@ jobs:
           go build -o output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }} main.go
 
       - name: Upload binaries as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: ${{ matrix.os.os-name }}-binary
           path: output/YASS-${{ matrix.os.os-name }}/YASS-${{ matrix.os.os-name }}
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4
 
       - name: Delete previous pre-release
         run: |
@@ -56,26 +56,25 @@ jobs:
             gh release delete "$PREV_TAG" --yes
           else
             echo "No previous release found."
-          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set release version
         id: version
         run: |
-          SHORT_SHA=$(git rev-parse --short=7 ${{ github.sha }})  # 使用 SHA 的前 7 个字符
+          SHORT_SHA=$(git rev-parse --short=7 ${{ github.sha }})
           VERSION="dev-$SHORT_SHA"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV  # 使用环境变量
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4  # Updated to v4
         with:
           path: ./artifacts
 
       - name: Create GitHub Pre-Release
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 提供 GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/create-release@v1
         with:
           tag_name: ${{ env.VERSION }}
