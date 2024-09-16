@@ -51,7 +51,12 @@ jobs:
 
       - name: Delete previous pre-release
         run: |
-          gh release delete $(gh release list --limit 1 --json tagName --jq '.[0].tagName') --yes
+          PREV_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          if [ -n "$PREV_TAG" ]; then
+            gh release delete "$PREV_TAG" --yes
+          else
+            echo "No previous release found."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -76,7 +81,7 @@ jobs:
           release_name: "Pre-Release ${{ env.VERSION }}"
           body: |
             预发布版本:
-            - Branch: ${{ github.ref }}
+            - Branch: dev
             - Commit: ${{ github.sha }}
           draft: false
           prerelease: true
@@ -88,7 +93,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./artifacts/linux-amd64-binary/YASS-linux-amd64
-          asset_name: YASS-linux-amd64
+          asset_name: YASS-Backend-Linux-AMD64-Dev
           asset_content_type: application/octet-stream
 
       - name: Upload Linux-arm64 binary to Pre-Release
@@ -98,5 +103,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./artifacts/linux-arm64-binary/YASS-linux-arm64
-          asset_name: YASS-linux-arm64
+          asset_name: YASS-Backend-Linux-ARM64-Dev
           asset_content_type: application/octet-stream
